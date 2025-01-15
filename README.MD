@@ -1,9 +1,9 @@
-<p align="center">
-  <img alt="Logo" title="LogoApp" src=".github/logo.png" width="200px" />
-</p>
 <h3 align = "center" fontSize="60px">
  App Agenda
 </h3>
+<p align="center">
+  <img alt="Logo" title="LogoApp" src=".github/logo.png" width="200px" />
+</p>
 <table>
   <tr>
     <td><img alt="tela1-home" src=".github/tela1-home.png" width="100%"></td>
@@ -18,19 +18,19 @@ Este é um aplicativo simples de agenda, desenvolvido com React Native e utiliza
 
 ## 🚀 Tecnologias Utilizadas
 
-- [React Native](https://img.shields.io/badge/-React%20Native-61DAFB?style=flat&logo=react&logoColor=black)  
+- ![React Native](https://img.shields.io/badge/-React%20Native-61DAFB?style=flat&logo=react&logoColor=black)  
   Utilizado para desenvolver o aplicativo móvel, permitindo a criação de interfaces nativas para Android e iOS utilizando JavaScript e React.
 
-- [Expo](https://img.shields.io/badge/-Expo-000000?style=flat&logo=expo&logoColor=white)  
+- ![Expo](https://img.shields.io/badge/-Expo-000000?style=flat&logo=expo&logoColor=white)  
   Plataforma que facilita o desenvolvimento de aplicativos React Native, proporcionando um ambiente de desenvolvimento rápido e integrado, com recursos como visualização em tempo real.
 
-- [AsyncStorage](https://img.shields.io/badge/-AsyncStorage-000000?style=flat&logo=react&logoColor=white)  
+- ![AsyncStorage](https://img.shields.io/badge/-AsyncStorage-000000?style=flat&logo=react&logoColor=white)  
   Utilizado para armazenar dados localmente no dispositivo, permitindo a persistência dos eventos mesmo após o fechamento do aplicativo.
 
-- [UUID](https://img.shields.io/badge/-UUID-000000?style=flat&logo=react&logoColor=white)  
+- ![UUID](https://img.shields.io/badge/-UUID-000000?style=flat&logo=react&logoColor=white)  
   Biblioteca usada para gerar identificadores exclusivos para os eventos, garantindo que cada entrada na agenda tenha um identificador único.
 
-- [Expo Notifications](https://img.shields.io/badge/-Expo%20Notifications-000000?style=flat&logo=expo&logoColor=white)  
+- ![Expo Notifications](https://img.shields.io/badge/-Expo%20Notifications-000000?style=flat&logo=expo&logoColor=white)  
   Utilizado para agendar e gerenciar notificações push no aplicativo, permitindo que os usuários recebam lembretes sobre os eventos agendados.
 
 # 🎨 Funcionalidades
