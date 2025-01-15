@@ -1,4 +1,5 @@
-import { View, Text, Button, Image, StyleSheet } from 'react-native';
+import { View, Text, Image, StyleSheet } from 'react-native';
+import { Button } from 'react-native-paper';
 import { useRouter } from 'expo-router';
 
 export default function Home() {
@@ -6,9 +7,14 @@ export default function Home() {
 
   return (
     <View style={styles.container}>
-      <Image source={{ uri: 'https://cdn-icons-png.flaticon.com/512/7324/7324708.png' }} style={styles.logo} />
-      <Text style={styles.title}>Bem-vindo à Minha Agenda</Text>
-      <Button title="Ver Agenda" onPress={() => router.push('/calendario')} />
+      <Image source={require('../assets/logo.png')} style={styles.logo} />
+      <Text style={styles.title}>Bem-vindo à Sua Agenda</Text>
+      <Button mode="contained" onPress={() => router.push('/calendario')}>
+        Ver Agenda
+      </Button>
+      <Button mode="contained" onPress={() => router.push('/eventos')} style={styles.button}>
+        Ver Eventos
+      </Button>
     </View>
   );
 }
@@ -19,6 +25,7 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     alignItems: 'center',
     padding: 16,
+    backgroundColor: '#3c4554',
   },
   logo: {
     width: 100,
@@ -29,5 +36,9 @@ const styles = StyleSheet.create({
     fontSize: 24,
     fontWeight: 'bold',
     marginBottom: 24,
+    color: 'white',
+  },
+  button: {
+    marginTop: 10,
   },
 });
