@@ -1,10 +1,9 @@
 import { Stack } from 'expo-router';
-import { View } from 'react-native';
 
 export default function Layout() {
   return (
     <Stack
-      initialRouteName="index"
+      initialRouteName="splash"
       screenOptions={{
         headerShown: true,
         headerStyle: {
@@ -13,25 +12,31 @@ export default function Layout() {
         headerTintColor: '#fff',
         contentStyle: {
           backgroundColor: '#3c4554',
-        }
+        },
       }}
     >
       <Stack.Screen
+        name="splash"
+        options={{
+          headerShown: false,
+        }}
+      />
+      <Stack.Screen
         name="index"
         options={{
-          title: "Home"
+          title: "Home",
         }}
       />
       <Stack.Screen
         name="calendario"
         options={{
-          title: "Agenda"
+          title: "Agenda",
         }}
       />
       <Stack.Screen
         name="eventos"
         options={{
-          title: "Eventos"
+          title: "Eventos",
         }}
       />
     </Stack>
