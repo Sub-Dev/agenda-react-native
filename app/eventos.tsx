@@ -42,7 +42,15 @@ export default function Eventos() {
   };
 
   const handleEditEvent = (event: Event) => {
-    router.push(`/editarEvento/${event.id}`);
+    router.push({
+      pathname: '/calendario',
+      params: {
+        id: event.id,
+        date: event.date,
+        time: event.time,
+        description: event.description,
+      },
+    });
   };
 
   const handleRemoveEvent = async (eventId: string, date: string) => {
@@ -51,11 +59,10 @@ export default function Eventos() {
       const events = savedEvents ? JSON.parse(savedEvents) : {};
       const updatedEvents = { ...events };
 
-      // Remove the event
       updatedEvents[date] = updatedEvents[date]?.filter((e: Event) => e.id !== eventId);
 
       await AsyncStorage.setItem('events', JSON.stringify(updatedEvents));
-      loadEvents();  // Reload events after removal
+      loadEvents();
     } catch (error) {
       console.error('Erro ao remover evento:', error);
     }
