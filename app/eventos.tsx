@@ -3,7 +3,7 @@ import { View, Text, FlatList } from 'react-native';
 import { Button } from 'react-native-paper';
 import { useRouter } from 'expo-router';
 import AsyncStorage from '@react-native-async-storage/async-storage';
-import styles from './styles';  // Importando os estilos
+import styles from './styles';
 
 interface Event {
   id: string;
@@ -49,6 +49,7 @@ export default function Eventos() {
         date: event.date,
         time: event.time,
         description: event.description,
+        fromEventos: 'true',
       },
     });
   };
@@ -72,16 +73,10 @@ export default function Eventos() {
     <View style={styles.eventItem}>
       <Text style={styles.eventText}>{item.date} - {item.time} - {item.description}</Text>
       <View style={styles.eventActions}>
-        <Button
-          mode="contained"
-          onPress={() => handleEditEvent(item)}
-          style={styles.editButton}>
+        <Button mode="contained" onPress={() => handleEditEvent(item)} style={styles.editButton}>
           Editar
         </Button>
-        <Button
-          mode="contained"
-          onPress={() => handleRemoveEvent(item.id, item.date)}
-          style={styles.removeButton}>
+        <Button mode="contained" onPress={() => handleRemoveEvent(item.id, item.date)} style={styles.removeButton}>
           Remover
         </Button>
       </View>

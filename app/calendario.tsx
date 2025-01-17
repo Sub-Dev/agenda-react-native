@@ -1,9 +1,8 @@
 import React, { useState, useEffect } from 'react';
-import { View, Alert, Text, TouchableOpacity, Image, FlatList } from 'react-native';
+import { View, Alert, Text, TouchableOpacity, FlatList } from 'react-native';
 import { Calendar, DateData } from 'react-native-calendars';
 import { Button, TextInput } from 'react-native-paper';
 import { useRouter, useLocalSearchParams } from 'expo-router';
-
 import * as Notifications from 'expo-notifications';
 import DateTimePickerModal from 'react-native-modal-datetime-picker';
 import AsyncStorage from '@react-native-async-storage/async-storage';
@@ -34,26 +33,31 @@ export default function Calendario() {
   const [editEventId, setEditEventId] = useState<string | null>(null);
 
   useEffect(() => {
-    (async () => {
-      const { status } = await Notifications.requestPermissionsAsync();
-      if (status !== 'granted') {
-        Alert.alert('Permissão negada', 'As notificações não funcionarão corretamente.');
-      }
-    })();
-  }, []);
-
-  useEffect(() => {
     loadEvents();
   }, []);
 
   useEffect(() => {
-    if (params.id) {
-      setSelectedDate(params.date ? params.date[0] : '');
-      setTime(params.time ? params.time[0] : '');
-      setEvent(params.description ? params.description[0] : '');
-      setEditEventId(params.id ? params.id[0] : null);
+    const getFirstParam = (param: string | string[] | undefined): string => {
+      if (Array.isArray(param)) {
+        return param[0];
+      }
+      return param || '';
+    };
+
+    if (params.id && params.date) {
+      const selectedDate = getFirstParam(params.date);
+      const eventId = getFirstParam(params.id);
+
+      const selectedEvent = events[selectedDate]?.find(event => event.id === eventId);
+
+      if (selectedEvent && editEventId !== eventId) {
+        setSelectedDate(selectedDate);
+        setTime(selectedEvent.time);
+        setEvent(selectedEvent.description);
+        setEditEventId(eventId);
+      }
     }
-  }, [params]);
+  }, [params, events]);
 
   const loadEvents = async () => {
     try {
@@ -110,22 +114,24 @@ export default function Calendario() {
         [selectedDate]: {
           marked: true,
           dotColor: 'blue',
+          activeOpacity: 0,
           selected: true,
           selectedBackgroundColor: 'rgba(144, 238, 144, 0.5)',
         },
       };
 
       let newEvents = { ...events };
+      const formattedDate = selectedDate;
 
       if (editEventId) {
-        newEvents[selectedDate] = newEvents[selectedDate]?.map((e) =>
+        newEvents[formattedDate] = newEvents[formattedDate]?.map((e) =>
           e.id === editEventId
             ? { ...e, time, description: event, notificationId }
             : e
         );
       } else {
-        newEvents[selectedDate] = [
-          ...(newEvents[selectedDate] || []),
+        newEvents[formattedDate] = [
+          ...(newEvents[formattedDate] || []),
           {
             id: uuid.v4(),
             time,
@@ -144,52 +150,71 @@ export default function Calendario() {
       setTime('');
       setEditEventId(null);
 
-      Alert.alert('Sucesso', 'Evento adicionado/atualizado e notificação agendada!');
+      Alert.alert('Sucesso', 'Evento adicionado/atualizado e notificação agendada!', [
+        {
+          text: 'OK',
+          onPress: () => {
+            if (params.fromEventos) {
+              router.push('/eventos');
+            } else {
+              router.push('/calendario');
+            }
+          }
+        },
+      ]);
     } catch (error) {
       console.error('Erro ao agendar notificação:', error);
     }
   };
 
-  useEffect(() => {
-    if (editEventId && events[selectedDate]) {
-      const updatedEvent = events[selectedDate]?.find((e) => e.id === editEventId);
-      if (updatedEvent) {
-        console.log('Evento atualizado corretamente:', updatedEvent);
-      } else {
-        console.log('Evento não encontrado após atualização');
-      }
+
+  const handleDayPress = (day: DateData) => {
+    if (editEventId) {
+      Alert.alert(
+        'Edição em andamento',
+        'Conclua ou cancele a edição do evento atual antes de selecionar outro dia.'
+      );
+    } else {
+      setSelectedDate(day.dateString);
     }
-  }, [events, selectedDate, editEventId]);
+  };
 
   const handleEditEvent = (eventToEdit: Event) => {
-    console.log("Editando evento:", eventToEdit);
-
-    setSelectedDate(selectedDate); // Use selectedDate para procurar o evento
+    setSelectedDate(selectedDate);
     setTime(eventToEdit.time);
     setEvent(eventToEdit.description);
     setEditEventId(eventToEdit.id);
-
-    if (events[selectedDate]) {
-      const eventExists = events[selectedDate].find(e => e.id === eventToEdit.id);
-      if (!eventExists) {
-        Alert.alert('Erro', 'O evento não foi encontrado para edição');
-      }
-    } else {
-      Alert.alert('Erro', 'Não há eventos para a data selecionada');
-    }
   };
 
   const handleRemoveEvent = async (eventId: string, date: string) => {
     const updatedEvents = { ...events };
     updatedEvents[date] = updatedEvents[date]?.filter((e) => e.id !== eventId);
 
-    const eventToRemove = events[date]?.find((e) => e.id === eventId);
+    const eventToRemove = updatedEvents[date]?.find((e) => e.id === eventId);
     if (eventToRemove?.notificationId) {
       await Notifications.cancelScheduledNotificationAsync(eventToRemove.notificationId);
     }
 
-    await AsyncStorage.setItem('events', JSON.stringify(updatedEvents));
-    setEvents(updatedEvents);
+    try {
+      await AsyncStorage.setItem('events', JSON.stringify(updatedEvents));
+      setEvents(updatedEvents);
+
+      Alert.alert('Sucesso', 'Evento removido com sucesso!', [
+        {
+          text: 'OK',
+          onPress: () => {
+
+            if (params.fromEventos) {
+              router.push('/eventos');
+            } else {
+              router.push('/calendario');
+            }
+          }
+        }
+      ]);
+    } catch (error) {
+      console.error('Erro ao remover evento:', error);
+    }
   };
 
   const renderEvent = ({ item }: { item: Event }) => (
@@ -218,7 +243,7 @@ export default function Calendario() {
             return (
               <View style={styles.calendarWrapper}>
                 <Calendar
-                  onDayPress={(day: DateData) => setSelectedDate(day.dateString)}
+                  onDayPress={handleDayPress}
                   markedDates={{
                     ...markedDates,
                     [selectedDate]: { selected: true, marked: true, dotColor: 'blue' },
@@ -230,7 +255,6 @@ export default function Calendario() {
             return (
               <View>
                 <TouchableOpacity onPress={() => setTimePickerVisible(true)} style={styles.timeButton}>
-                  <Image source={require('../assets/icon-more.png')} style={styles.icon} />
                   <Text style={styles.timeText}>{time ? `Hora Selecionada: ${time}` : 'Selecionar Hora'}</Text>
                 </TouchableOpacity>
                 <DateTimePickerModal
@@ -242,7 +266,7 @@ export default function Calendario() {
                 <TextInput
                   label="Descrição do Evento"
                   value={event}
-                  onChangeText={setEvent}
+                  onChangeText={text => setEvent(text)}
                   style={styles.input}
                 />
                 <Button mode="contained" onPress={handleAddOrUpdateEvent}>
