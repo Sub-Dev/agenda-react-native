@@ -19,7 +19,8 @@
       "adaptiveIcon": {
         "foregroundImage": "./assets/logo.png",
         "backgroundColor": "#3c4554"
-      }
+      },
+      "package": "com.anthony_marin.AgendaApp"
     },
     "web": {
       "favicon": "./assets/logo.png",
@@ -29,6 +30,14 @@
       "expo-router",
       "expo-font"
     ],
-    "scheme": "myapp"
+    "scheme": "myapp",
+    "extra": {
+      "router": {
+        "origin": false
+      },
+      "eas": {
+        "projectId": "1a59f52c-6363-4733-af9c-f3adf1c0bdc0"
+      }
+    }
   }
 }
